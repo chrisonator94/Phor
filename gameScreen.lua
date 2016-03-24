@@ -44,23 +44,23 @@ local function update(dt)
 end
 
 local function draw()
-	local x = 50
-	local y = 50
+	local x = 100
+	local y = 100
 	for i = 0, numRow - 1 do
 		for j = 0, numCol - 1 do
-			love.graphics.rectangle("line", x, y, 50, 50 )
+			love.graphics.rectangle("line", x, y, 100, 100 )
 			if board[i][j] == 'R' then 
 				love.graphics.setColor(255, 0, 0)
-				love.graphics.circle("fill", x + 25, y + 25, 20)
+				love.graphics.circle("fill", x + 50, y + 50, 40)
 			elseif board[i][j] == 'Y' then
 				love.graphics.setColor(255, 255, 0)
-				love.graphics.circle("fill", x + 25, y + 25, 20)
+				love.graphics.circle("fill", x + 50, y + 50, 40)
 			end 
 			love.graphics.setColor(255, 255, 255)
-			x = x + 50
+			x = x + 100
 		end 
-		y = y + 50
-		x = 50
+		y = y + 100
+		x = 100
 	end
 
 	--tells players whose turn it is and announces the winner (if there is one)
@@ -70,7 +70,9 @@ local function draw()
 		else 
 			love.graphics.print("It's yellows Turn! Pick a column!")
 		end
-	else 
+	elseif numChoices == 42 then
+		love.graphics.print("Its a Tie!")
+	else
 		if isRed then
 			love.graphics.print("Red is the Winner!")
 		else 
@@ -119,28 +121,21 @@ end
 
 function checkWinner()
 	if checkWinRows(board) then
-		print("I am here")
 		return true
 	elseif checkWinCols(board) then
 		return true
-	elseif checkWinDiag(board) then
+	elseif checkWinDiagRight(board) then
 		return true
-	elseif numChoices == 42 then
-		return false
+	elseif checkWinDiagLeft(board) then
+		return true
 	end
 	return false
 end
 
 function checkWinRows(matrix)
 	for i = 0, numRow - 1 do 
-		local count = 0
-		for j = 1, numCol - 1 do
-			if matrix[i][j] ~= ' ' and matrix[i][j] == matrix[i][j - 1] then
-				count = count + 1
-			else 
-				count = 1
-			end
-			if count >= 4 then
+		for j = 3, numCol - 1 do
+			if matrix[i][j] ~= ' ' and matrix[i][j] == matrix[i][j - 1] and matrix[i][j] == matrix[i][j - 2] and matrix[i][j] == matrix[i][j - 3] then
 				return true
 			end
 		end
@@ -149,15 +144,9 @@ function checkWinRows(matrix)
 end
 
 function checkWinCols(matrix)
-	for i = 0, numCol - 1 do 
-		local count = 0
-		for j = 1, numRow - 1 do
-			if matrix[j][i] ~= ' ' and matrix[j][i] == matrix[j - 1][i] then
-				count = count + 1
-			else 
-				count = 1
-			end
-			if count >= 4 then
+	for i = 0, 2 do 
+		for j = 0, numCol - 1 do
+			if matrix[i][j] ~= ' ' and matrix[i][j] == matrix[i + 1][j] and matrix[i][j] == matrix[i + 2][j] and matrix[i][j] == matrix[i + 3][j] then
 				return true
 			end
 		end
@@ -165,27 +154,45 @@ function checkWinCols(matrix)
 	return false
 end
 
-function checkWinDiag(matrix)
+--diagonals starting from the top right
+function checkWinDiagRight(matrix)
+	for i = 0, 2 do
+		for j = 0, 3 do
+			if matrix[i][j] ~= ' ' and matrix[i][j] == matrix[i + 1][j + 1] and matrix[i][j] == matrix[i + 2][j + 2] and matrix[i][j] == matrix[i + 3][j + 3] then
+				return true
+			end 
+		end
+	end
 	return false
 end
 
+--diagonals starting from the top left
+function checkWinDiagLeft(matrix)
+	for i = 0, 2 do 
+		for j = 3, numRow - 1 do 
+			if matrix[i][j] ~= ' ' and matrix[i][j] == matrix[i + 1][j - 1] and matrix[i][j] == matrix[i + 2][j - 2] and matrix[i][j] == matrix[i + 3][j - 3] then
+				return true
+			end 
+		end
+	end
+end
+
 local function mousepressed(x, y, button)
-	if x > 50 and x < 100 then
+	if x > 100 and x < 200 then
 		colChoice = 0
-	elseif x > 100 and x < 150 then
+	elseif x > 200 and x < 300 then
 		colChoice = 1
-	elseif x > 150 and x < 200 then
+	elseif x > 300 and x < 400 then
 		colChoice = 2
-	elseif x > 200 and x < 250 then
+	elseif x > 400 and x < 500 then
 		colChoice = 3
-	elseif x > 250 and x < 300 then
+	elseif x > 500 and x < 600 then
 		colChoice = 4
-	elseif x > 300 and x < 350 then
+	elseif x > 600 and x < 700 then
 		colChoice = 5
-	elseif x > 350 and x < 400 then
+	elseif x > 700 and x < 800 then
 		colChoice = 6
 	end
-	print(colChoice)
 end
 
 return {
